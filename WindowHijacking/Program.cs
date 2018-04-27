@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text;
 using System.Drawing;
-using System.Security;
 using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
@@ -19,29 +18,6 @@ namespace WindowHijacking
         #endregion
 
         #region Imports
-
-        [DllImport("dwmapi.dll")]
-        static extern int DwmExtendFrameIntoClientArea(IntPtr hwnd, ref MARGINS margins);
-
-        [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
-        static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int y, int cx, int cy, uint wFlags);
-
-        [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
-        static extern int SetWindowLong32(HandleRef hWnd, int nIndex, int dwNewLong);
-
-        [DllImport("user32.dll")]
-        static extern int SetMenu(IntPtr hwnd, int hMenu);
-
-        [DllImport("user32.dll")]
-        static extern IntPtr DispatchMessage([In] ref NativeMessage lpmsg);
-
-        [DllImport("user32.dll")]
-        static extern bool TranslateMessage([In] ref NativeMessage lpMsg);
-
-        [SuppressUnmanagedCodeSecurity]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        [DllImport("User32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        static extern bool PeekMessage(out NativeMessage message, IntPtr handle, uint filterMin, uint filterMax, uint flags);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
