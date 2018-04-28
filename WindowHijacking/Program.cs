@@ -30,7 +30,7 @@ namespace WindowHijacking
         static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
 
         [DllImport("user32.dll", SetLastError = true)]
-        static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
+        static extern bool GetWindowRect(IntPtr hwnd, out Rect lpRect);
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         static extern int GetWindowText(IntPtr hWnd, StringBuilder strText, int maxCount);
@@ -73,63 +73,18 @@ namespace WindowHijacking
             //..
         }
 
-        enum PM : uint
-        {
-            NOREMOVE = 0x0000,
-            REMOVE = 0x0001,
-            NOYIELD = 0x0002
-        }
-
-        enum HWND : int
-        {
-            BOTTOM = 1,
-            NOTOPMOST = -2,
-            TOP = 0,
-            TOPMOST = -1
-        }
-
-        enum SWP : uint
-        {
-            ASYNCWINDOWPOS = 0x4000,
-            DEFERERASE = 0x2000,
-            DRAWFRAME = 0x0020,
-            FRAMECHANGED = 0x0020,
-            HIDEWINDOW = 0x0080,
-            NOACTIVATE = 0x0010,
-            NOCOPYBITS = 0x0100,
-            NOMOVE = 0x0002,
-            NOOWNERZORDER = 0x0200,
-            NOREDRAW = 0x0008,
-            NOREPOSITION = 0x0200,
-            NOSENDCHANGING = 0x0400,
-            NOSIZE = 0x0001,
-            NOZORDER = 0x0004,
-            SHOWWINDOW = 0x0040
-        }
-
         #endregion
 
         #region Structs
 
         // The Win32 RECT is not binary compatible with System.Drawing.Rectangle.
         [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
+        public struct Rect
         {
             public int Left;    // x position of upper-left corner
             public int Top;     // y position of upper-left corner
             public int Right;   // x position of lower-right corner
             public int Bottom;  // y position of lower-right corner
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct NativeMessage
-        {
-            public IntPtr handle;
-            public uint msg;
-            public IntPtr wParam;
-            public IntPtr lParam;
-            public uint time;
-            public System.Drawing.Point pt;
         }
 
         public struct WindowFinderParams
@@ -147,23 +102,6 @@ namespace WindowHijacking
                 this.MinWidth = min_width;
                 this.MinHeight = min_height;
                 this.CheckAttributes = check_attributes;
-            }
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct MARGINS
-        {
-            public int leftWidth;
-            public int rightWidth;
-            public int topHeight;
-            public int bottomHeight;
-
-            public MARGINS(int leftWidth, int rightWidth, int topHeight, int bottomHeight)
-            {
-                this.leftWidth = leftWidth;
-                this.rightWidth = rightWidth;
-                this.topHeight = topHeight;
-                this.bottomHeight = bottomHeight;
             }
         }
 
