@@ -226,6 +226,7 @@ namespace WindowHijacking
             var hWnd = hWnds.FirstOrDefault();
             var hDc = GetDC(hWnd);
 
+            using (var graphics = Graphics.FromHdc(hDc))
             using (var font = new Font("Tahoma", 26))
             using (var brush = new SolidBrush(Color.Magenta))
             {
@@ -242,8 +243,7 @@ namespace WindowHijacking
                         break;
                     }
 
-                    using (var graphics = Graphics.FromHdc(hDc))
-                        graphics.DrawString($"Hello: {username}", font, brush, 5f, 5f);
+                    graphics.DrawString($"Hello: {username}", font, brush, 5f, 5f);
 
                     var current_datetime = DateTime.Now;
                     if (DateTime.Compare(current_datetime, next_alive_print) < 0)
