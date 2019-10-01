@@ -146,9 +146,8 @@ namespace WindowHijacking
             return FindWindows((hWnd, param) =>
             {
                 var window_title = GetWindowText(hWnd);
-                if (window_finder_params.TitleContains != string.Empty)
-                    if (window_finder_params.TitleContains != null && !window_title.ToLower().Contains(window_finder_params.TitleContains.ToLower()))
-                        return false;
+                if (!string.IsNullOrEmpty(window_finder_params.TitleContains) && !window_title.ToLower().Contains(window_finder_params.TitleContains.ToLower()))
+                    return false;
 
                 GetWindowRect(hWnd, out var lpRect);
                 if (window_finder_params.CheckSize && (lpRect.Right < window_finder_params.MinWidth || lpRect.Bottom < window_finder_params.MinHeight))
@@ -179,12 +178,10 @@ namespace WindowHijacking
         static IEnumerable<IntPtr> FindWindows(EnumWindowsProc filter)
         {
             var windows = new List<IntPtr>();
-
             EnumWindows(delegate (IntPtr hWnd, IntPtr param)
             {
                 if (filter(hWnd, param))
                     windows.Add(hWnd);
-
                 return true;
             }, IntPtr.Zero);
 
@@ -229,32 +226,33 @@ namespace WindowHijacking
             var hWnd = hWnds.FirstOrDefault();
             var hDc = GetDC(hWnd);
 
-            var font = new Font("Tahoma", 26);
-            var brush = new SolidBrush(Color.Magenta);
-
-            var username = Environment.UserName;
-            var next_alive_print = DateTime.Now;
-
-            while (true)
+            using (var font = new Font("Tahoma", 26))
+            using (var brush = new SolidBrush(Color.Magenta))
             {
-                Thread.Sleep(1);
+                var username = Environment.UserName;
+                var next_alive_print = DateTime.Now;
 
-                if (!IsWindow(hWnd))
+                while (true)
                 {
-                    LogError("lost window");
-                    break;
+                    Thread.Sleep(1);
+
+                    if (!IsWindow(hWnd))
+                    {
+                        LogError("lost window");
+                        break;
+                    }
+
+                    using (var graphics = Graphics.FromHdc(hDc))
+                        graphics.DrawString($"Hello: {username}", font, brush, 5f, 5f);
+
+                    var current_datetime = DateTime.Now;
+                    if (DateTime.Compare(current_datetime, next_alive_print) < 0)
+                        continue;
+
+                    LogInfo("drawing");
+
+                    next_alive_print = current_datetime.AddSeconds(5);
                 }
-
-                using (var graphics = Graphics.FromHdc(hDc))
-                    graphics.DrawString($"Hello: {username}", font, brush, 5f, 5f);
-
-                var current_datetime = DateTime.Now;
-                if (DateTime.Compare(current_datetime, next_alive_print) < 0)
-                    continue;
-
-                LogInfo("drawing");
-
-                next_alive_print = current_datetime.AddSeconds(5);
             }
 
         EXIT:
