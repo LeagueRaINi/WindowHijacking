@@ -146,9 +146,8 @@ namespace WindowHijacking
             return FindWindows((hWnd, param) =>
             {
                 var window_title = GetWindowText(hWnd);
-                if (window_finder_params.TitleContains != string.Empty)
-                    if (window_finder_params.TitleContains != null && !window_title.ToLower().Contains(window_finder_params.TitleContains.ToLower()))
-                        return false;
+                if (!string.IsNullOrEmpty(window_finder_params.TitleContains) && !window_title.ToLower().Contains(window_finder_params.TitleContains.ToLower()))
+                    return false;
 
                 GetWindowRect(hWnd, out var lpRect);
                 if (window_finder_params.CheckSize && (lpRect.Right < window_finder_params.MinWidth || lpRect.Bottom < window_finder_params.MinHeight))
@@ -179,12 +178,10 @@ namespace WindowHijacking
         static IEnumerable<IntPtr> FindWindows(EnumWindowsProc filter)
         {
             var windows = new List<IntPtr>();
-
             EnumWindows(delegate (IntPtr hWnd, IntPtr param)
             {
                 if (filter(hWnd, param))
                     windows.Add(hWnd);
-
                 return true;
             }, IntPtr.Zero);
 
