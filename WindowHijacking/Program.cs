@@ -226,32 +226,33 @@ namespace WindowHijacking
             var hWnd = hWnds.FirstOrDefault();
             var hDc = GetDC(hWnd);
 
-            var font = new Font("Tahoma", 26);
-            var brush = new SolidBrush(Color.Magenta);
-
-            var username = Environment.UserName;
-            var next_alive_print = DateTime.Now;
-
-            while (true)
+            using (var font = new Font("Tahoma", 26))
+            using (var brush = new SolidBrush(Color.Magenta))
             {
-                Thread.Sleep(1);
+                var username = Environment.UserName;
+                var next_alive_print = DateTime.Now;
 
-                if (!IsWindow(hWnd))
+                while (true)
                 {
-                    LogError("lost window");
-                    break;
+                    Thread.Sleep(1);
+
+                    if (!IsWindow(hWnd))
+                    {
+                        LogError("lost window");
+                        break;
+                    }
+
+                    using (var graphics = Graphics.FromHdc(hDc))
+                        graphics.DrawString($"Hello: {username}", font, brush, 5f, 5f);
+
+                    var current_datetime = DateTime.Now;
+                    if (DateTime.Compare(current_datetime, next_alive_print) < 0)
+                        continue;
+
+                    LogInfo("drawing");
+
+                    next_alive_print = current_datetime.AddSeconds(5);
                 }
-
-                using (var graphics = Graphics.FromHdc(hDc))
-                    graphics.DrawString($"Hello: {username}", font, brush, 5f, 5f);
-
-                var current_datetime = DateTime.Now;
-                if (DateTime.Compare(current_datetime, next_alive_print) < 0)
-                    continue;
-
-                LogInfo("drawing");
-
-                next_alive_print = current_datetime.AddSeconds(5);
             }
 
         EXIT:
